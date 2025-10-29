@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 // Importamos el archivo de CSS Modules
 import './ReporteComponent.css';
 
