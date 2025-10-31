@@ -1,62 +1,66 @@
-import React, { useState, useEffect } from 'react';
-// Importamos el archivo de CSS Modules
-import './ReporteComponent.css';
+// En tu archivo ReporteComponent.tsx
 
-// Componente principal que se renderizará en la ruta /reportar
-function ReporteComponent() {
-  // Ya no usamos el hook useSearchParams.
+"use client";
+
+import React, { useState, useEffect } from 'react';
+// 1. IMPORTAMOS EL HOOK
+import { useSearchParams } from 'next/navigation'; 
+import './ReporteComponent.css'; 
+
+// 2. YA NO NECESITAMOS LA INTERFAZ DE PROPS
+
+function ReporteComponent() { // <-- Sin props
   
-  // Estados para almacenar la información del reporte y del PC
+  // 3. LLAMAMOS AL HOOK PARA OBTENER LOS PARÁMETROS
+  const searchParams = useSearchParams();
+  
+  // 4. Extraemos el ID de los parámetros
+  const pcIdFromUrl = searchParams.get('id'); // .get('id') en lugar de .id
+
+  // Tus estados (sin cambios)
   const [pcId, setPcId] = useState('');
   const [sala, setSala] = useState('');
   const [computador, setComputador] = useState('');
   
-  // Estados para manejar el formulario
   const [tipoProblema, setTipoProblema] = useState('computador');
   const [descripcion, setDescripcion] = useState('');
-  
-  // Estado para mostrar mensajes al usuario (ej: "Enviando...", "Reporte enviado")
   const [status, setStatus] = useState('');
 
-  // useEffect se ejecuta una vez que el componente se monta en el cliente.
-  // Ahora leerá la URL directamente desde el objeto 'window' del navegador.
+  // 5. El useEffect ahora reacciona a 'pcIdFromUrl' (que viene del hook)
   useEffect(() => {
-    // Usamos las APIs estándar del navegador para obtener los parámetros de la URL.
-    const params = new URLSearchParams(window.location.search);
-    const idFromUrl = params.get('id');
+    
+    if (pcIdFromUrl && pcIdFromUrl.startsWith('LAB') && pcIdFromUrl.length === 8) {
+      const salaParsed = pcIdFromUrl.substring(3, 6); 
+      const pcParsed = pcIdFromUrl.substring(6, 8);   
 
-    if (idFromUrl && idFromUrl.startsWith('LAB') && idFromUrl.length === 8) {
-      // Validamos que el ID tenga el formato esperado (LAB + 5 números)
-      const salaParsed = idFromUrl.substring(3, 6); // Extrae los caracteres del 3 al 5 (sala)
-      const pcParsed = idFromUrl.substring(6, 8);   // Extrae los caracteres del 6 al 7 (PC)
-
-      // Guardamos la información en los estados
-      setPcId(idFromUrl);
+      setPcId(pcIdFromUrl);
       setSala(salaParsed);
       setComputador(pcParsed);
+      setStatus(''); 
     } else {
-      // Si no hay ID o el formato es incorrecto, lo indicamos
       setStatus('ID de equipo no válido o no encontrado.');
     }
-  }, []); // El array vacío asegura que este efecto se ejecute solo una vez.
+  }, [pcIdFromUrl]); // El efecto se ejecuta cuando el hook termine de leer la URL
 
-  // Función que se ejecuta al enviar el formulario
+  // ... (El resto de tu código: handleSubmit, y el return JSX ...)
+  // ... (No es necesario cambiar nada más en este archivo)
+
+  // Función que se ejecuta al enviar el formulario (sin cambios)
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevenimos que la página se recargue
+    event.preventDefault(); 
     setStatus('Enviando reporte...');
-
+    // ... (resto del fetch sin cambios)
     const reporte = {
       pcId,
       sala,
       computador,
       tipoProblema,
       descripcion,
-      fecha: new Date().toISOString(), // Añadimos la fecha actual
-      estado: 'abierto' // Estado inicial del reporte
+      fecha: new Date().toISOString(), 
+      estado: 'Abierto'
     };
     
     try {
-      // Hacemos una llamada a nuestra futura API para guardar el reporte
       const response = await fetch('/api/reportes', {
         method: 'POST',
         headers: {
@@ -69,11 +73,9 @@ function ReporteComponent() {
         throw new Error('Falló la respuesta del servidor');
       }
 
-      // Si todo sale bien, mostramos un mensaje de éxito
       const result = await response.json();
       console.log('Reporte enviado:', result);
       setStatus(`¡Reporte para el PC ${computador} de la sala ${sala} enviado con éxito!`);
-      // Opcional: Limpiar el formulario
       setDescripcion('');
       setTipoProblema('computador');
 
@@ -83,17 +85,19 @@ function ReporteComponent() {
     }
   };
 
-  // Si aún no se ha cargado la info del PC, muestra un mensaje
+  // Si aún no se ha cargado la info del PC, muestra un mensaje (sin cambios)
   if (!pcId && !status) {
-    return <div className="loadingMessage">Cargando información del equipo...</div>;
+    // Este mensaje ahora se mostrará si el ID es inválido.
+    // El "LoadingFallback" de page.tsx se mostrará ANTES.
+    return <div className="loadingMessage">{status || 'Cargando...'}</div>;
   }
-
+  
+  // Return JSX (sin cambios)
   return (
     <main className="main">
       <div className="container">
         <h1 className="title">Reportar Incidencia</h1>
 
-        {/* Mostramos la información del PC extraída de la URL */}
         <div className="infoBox">
           <p className="infoLabel">Estás reportando para:</p>
           <p className="infoData">
@@ -105,7 +109,6 @@ function ReporteComponent() {
           <p className="infoId">ID Completo: {pcId}</p>
         </div>
 
-        {/* Formulario de reporte */}
         <form onSubmit={handleSubmit} className="form">
           <div>
             <label htmlFor="tipo-problema" className="label">
@@ -150,7 +153,6 @@ function ReporteComponent() {
           </button>
         </form>
 
-        {/* Mostramos el estado del envío */}
         {status && <p className="statusMessage">{status}</p>}
       </div>
     </main>

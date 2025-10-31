@@ -1,14 +1,25 @@
-// Al usar hooks como useState, necesitamos especificar que este es un Componente de Cliente.
-'use client';
-import { Suspense } from 'react';
+// app/reportar/page.tsx
+
+import React, { Suspense } from 'react';
 import ReporteComponent from '../../components/reportar/ReporteComponent';
-// Se mantiene Suspense por si en el futuro se añaden otros componentes que lo necesiten,
-// aunque ahora no es estrictamente necesario para leer la URL de esta manera.
-export default function ReportarPage() {
-    return (
-        <Suspense fallback={<div>Cargando...</div>}>
-            <ReporteComponent />
-        </Suspense>
-    )
+
+// Componente "Loading..." simple que se mostrará
+// mientras ReporteComponent lee la URL.
+function LoadingFallback() {
+  // Puedes usar tu clase CSS aquí si quieres
+  return <div style={{ padding: '2rem', textAlign: 'center' }}>
+    Cargando información del equipo...
+  </div>;
 }
 
+// ESTA PÁGINA YA NO RECIBE searchParams
+export default function ReportarPage() {
+  
+  // Simplemente renderizamos el componente cliente
+  // envuelto en un <Suspense>
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ReporteComponent />
+    </Suspense>
+  );
+}
