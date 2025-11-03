@@ -1,0 +1,142 @@
+/* Importar una fuente de Google (opcional, pero recomendado) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* --- Estilos Globales y del Body (Generalmente en globals.css) --- */
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+/* El estilo del body debería ir en un archivo global como globals.css en Next.js, 
+pero lo incluimos aquí para completar el archivo CSS. */
+body {
+font-family: 'Poppins', sans-serif;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+background-size: cover;
+}
+
+/* --- Contenedor Principal (Tarjeta) --- */
+.wrapper {
+width: 420px;
+max-width: 90%;
+padding: 30px 40px;
+border-radius: 12px;
+/* Efecto "Frosted Glass" (Vidrio Esmerilado) */
+background: rgba(255, 255, 255, 0.1);
+backdrop-filter: blur(10px);
+-webkit-backdrop-filter: blur(10px);
+border: 2px solid rgba(255, 255, 255, 0.2);
+box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+color: #ffffff; /* Color de texto principal (blanco) */
+}
+
+/* --- Título y Subtítulo de Administración --- */
+.wrapper h1 {
+font-size: 30px; /* Ajustado para la vista de Admin */
+text-align: center;
+margin-bottom: 5px;
+font-weight: 700;
+} /* <-- La llave de cierre correcta está aquí */
+
+.wrapper .subtitle { /* <-- Este selector debe comenzar justo después de la llave de cierre de h1 */
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* --- Contenedor de Items de Navegación --- */
+.nav-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* --- Estilo de los Items de Navegación (Replicando el input-box) --- */
+.nav-item {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  
+  /* Replicando el estilo del input-box */
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 40px; 
+  
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Efecto al pasar el mouse (hover) y enfocar (focus) */
+.nav-item:hover, .nav-item:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #ffffff;
+    transform: scale(1.02);
+    outline: none; 
+}
+
+.nav-item:active {
+    transform: scale(0.99); 
+}
+
+.nav-item .item-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.nav-item .nav-icon {
+  font-size: 20px; 
+  margin-right: 15px;
+}
+
+.nav-item .nav-text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+
+/* --- Botón (Cerrar Sesión) --- */
+.wrapper .btn {
+  width: 100%;
+  height: 45px;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  transition: background 0.3s ease, transform 0.1s ease;
+  margin-top: 30px; /* Espacio antes del botón */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilo de botón para cerrar sesión */
+.logout-btn {
+    background: #e74c3c; /* Rojo de advertencia */
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+    border: 2px solid #c0392b;
+}
+
+.logout-btn:hover {
+    background: #c0392b;
+    color: #ffffff;
+}
+
+.wrapper .btn .btn-icon {
+    font-size: 18px;
+    margin-right: 8px;
+}
