@@ -1,7 +1,9 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
+// : Usamos 'supabase' (la instancia exportada) y le damos el alias 'createClient' 
+// para que el resto del código no necesite cambios mayores.
+import { supabase as createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,7 +28,8 @@ export function ForgotPasswordForm({
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
+    // 'createClient' es ahora la instancia de Supabase (sin paréntesis)
+    const supabase = createClient; 
     setIsLoading(true);
     setError(null);
 
@@ -103,3 +106,4 @@ export function ForgotPasswordForm({
     </div>
   );
 }
+

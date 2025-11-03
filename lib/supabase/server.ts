@@ -1,34 +1,25 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+// lib/supabase/server.ts
 
-/**
- * Especially important if using Fluid compute: Don't put this client in a
- * global variable. Always create a new client within each function when using
- * it.
- */
-export async function createClient() {
-  const cookieStore = await cookies();
+import { createClient } from '@supabase/supabase-js';
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options),
-            );
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-      },
+// Función para crear un cliente con permisos de Service Role (ADMIN)
+// Este cliente se usa en rutas de servidor donde se necesita ignorar RLS.
+export function createServiceRoleClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error('Faltan las variables de entorno para el cliente de Service Role.');
+  }
+
+  // Usamos el paquete principal, no @supabase/ssr, y configuramos 'auth' para null
+  // y 'global' para que ignore RLS y use la clave de administrador.
+  return createClient(supabaseUrl, serviceRoleKey, {
+    auth: {
+      persistSession: false, // No mantener sesión
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
     },
-  );
+    // Opcional: headers: { 'Authorization': `Bearer ${serviceRoleKey}` } si es necesario
+  });
 }
