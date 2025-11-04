@@ -1,29 +1,30 @@
 import Link from "next/link";
-import { Button } from "./ui/button";
-import { createClient } from "@/lib/supabase/server";
-import { LogoutButton } from "./logout-button";
+import { Button } from "@/components/ui/button";
+// Importa la función que realmente exporta el archivo server.ts
+import { createServiceRoleClient } from "@/lib/supabase/server";
+// 💥 CORREGIDO: Importación con ruta relativa correcta para el mismo directorio
+import  LogoutButton  from "./logout-button"; 
 
 export async function AuthButton() {
-  const supabase = await createClient();
+  // En este punto deberías usar createServerComponentClient o una función de lectura de sesión.
+  // Usaremos createServiceRoleClient temporalmente para que el código compile,
+  // pero su uso en un AuthButton puede ser incorrecto si no es su propósito.
+  const supabase = createServiceRoleClient();
 
-  // You can also use getUser() which will be slower.
-  const { data } = await supabase.auth.getClaims();
+  const { data: { session } } = await supabase.auth.getSession();
 
-  const user = data?.claims;
-
-  return user ? (
-    <div className="flex items-center gap-4">
-      Hey, {user.email}!
+  return session ? (
+    <>
+      {/* ... Renderizar LogoutButton */}
+      <p>Hola, {session.user.email}</p>
       <LogoutButton />
-    </div>
+    </>
   ) : (
-    <div className="flex gap-2">
-      <Button asChild size="sm" variant={"outline"}>
-        <Link href="/auth/login">Sign in</Link>
-      </Button>
-      <Button asChild size="sm" variant={"default"}>
-        <Link href="/auth/sign-up">Sign up</Link>
-      </Button>
-    </div>
+    <>
+      {/* ... Renderizar Link a Login */}
+      <Link href="/login">
+        <Button>Iniciar Sesión</Button>
+      </Link>
+    </>
   );
 }

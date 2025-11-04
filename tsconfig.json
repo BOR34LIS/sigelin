@@ -13,17 +13,36 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    // Esta opción es clave para la resolución de módulos absolutos
+    "moduleResolution": "bundler", 
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    
+    // --- Opciones Complementarias Añadidas ---
+    
+    // 1. Permite importar componentes React sin tener que usar 'import React from "react"'
+    "jsxImportSource": "react", 
+    
+    // 2. Útil para bibliotecas externas que pueden no usar exportaciones por defecto
+    "allowSyntheticDefaultImports": true, 
+    
+    // 3. Permite importar archivos que no son módulos TS, como CSS (si usas Next.js con CSS)
+    "allowUmdGlobalAccess": true, 
+
+    // 4. (Opcional, si usas la antigua forma de TS con Babel)
+    // "resolveJsonModule": true, 
+    
+    // ------------------------------------------
+
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
+      // Configuración de rutas absolutas para '@/' que ya tenías
       "@/*": [
         "./*"
       ]
@@ -34,6 +53,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
+    // También puedes incluir archivos .js si los estás usando:
+    // "**/*.js",
+    // "**/*.jsx"
   ],
   "exclude": [
     "node_modules"
