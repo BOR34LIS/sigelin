@@ -1,23 +1,29 @@
-// app/reportar/page.tsx (Versión CORRECTA)
+// app/reportar/page.tsx
 
 import ReporteComponent from "@/components/reportar/ReporteComponent";
 import React from "react";
 
-// (Opcional pero recomendado) Fuerza a la página a ser dinámica
-// Esto ayuda a evitar errores de caché con los searchParams
 export const dynamic = 'force-dynamic';
 
-// 1. La página (Componente de Servidor) recibe 'searchParams'
-export default function ReportarPage({
-  searchParams,
-}: {
-  searchParams: { id: string | undefined };
-}) {
+// --- ESTA ES LA PARTE A ARREGLAR ---
+// 1. Definimos la interfaz correcta para las props de la página
+interface ReportarPageProps {
+  searchParams: {
+    // searchParams puede ser un string, un array de strings, o undefined
+    id?: string | string[];
+  };
+}
 
-  // 2. Lee el 'id' de los parámetros de la URL
-  const pcIdFromUrl = searchParams.id;
+// 2. Usamos la nueva interfaz en tu componente
+export default function ReportarPage({ searchParams }: ReportarPageProps) {
 
-  // 3. Pasa el 'id' como prop al componente de cliente
+  // 3. Extraemos el 'id' de forma segura
+  //    (Si hay múltiples ?id=, toma el primero. Si no hay, es undefined)
+  const pcIdFromUrl = Array.isArray(searchParams.id)
+    ? searchParams.id[0]
+    : searchParams.id;
+
+  // 4. Pasa el 'id' como prop al componente de cliente
   return (
     <main>
       <ReporteComponent pcIdFromUrl={pcIdFromUrl} />
