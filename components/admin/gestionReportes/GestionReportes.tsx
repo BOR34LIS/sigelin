@@ -1,14 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import './GestionReportes.css'; // Crearemos este archivo CSS
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-);
+
 
 // Tipos de datos para los tickets
 type Ticket = {

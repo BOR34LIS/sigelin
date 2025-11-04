@@ -6,14 +6,7 @@ import React, { useState } from "react";
 import "./LoginForm.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { createClient } from '@supabase/supabase-js';
-
-// 1. INICIALIZA EL CLIENTE PÚBLICO DE SUPABASE
-//    (Asegúrate de que estas variables estén en .env.local y Vercel)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-);
+import { supabase } from '@/lib/supabase/client';
 
 const LoginForm = () => {
   const router = useRouter();

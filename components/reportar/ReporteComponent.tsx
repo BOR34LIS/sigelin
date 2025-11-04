@@ -4,13 +4,9 @@
 
 import React, { useState, useEffect } from 'react';
 import './ReporteComponent.css'; 
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation'; // <-- 1. IMPORTAR useRouter
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-);
 
 interface ReporteComponentProps {
   pcIdFromUrl: string | undefined;

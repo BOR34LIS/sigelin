@@ -1,15 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import './GestionUsuarios.css';
-
-// Cliente público de Supabase
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-);
 
 // Definimos el tipo de dato para un perfil de usuario
 type UserProfile = {

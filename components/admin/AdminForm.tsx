@@ -4,13 +4,9 @@ import React, { useState, useEffect } from "react"; // <-- 1. IMPORTAR useEffect
 import "./AdminForm.css";
 import { useRouter } from 'next/navigation';
 import { FaUsers, FaChartBar, FaSignOutAlt, FaBoxOpen, FaUserPlus, FaSpinner } from "react-icons/fa"; // <-- 2. Añadir FaSpinner
-import { createClient } from '@supabase/supabase-js';
-
+import { supabase } from '@/lib/supabase/client';
 // --- Inicializar el cliente público de Supabase ---
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-);
+
 
 // --- Componente NavItem (sin cambios) ---
 interface NavItemProps {
