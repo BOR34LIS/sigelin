@@ -2,68 +2,92 @@
 
 import React, { useState } from "react";
 import "./RegistroForm.css";
-import { FaUser, FaLock, FaEnvelope } from "react-icons/fa"; // Removida FaBriefcase
+import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { supabase } from '@/lib/supabase/client';
+// ¡Ya no necesitamos 'createClient' aquí para el registro!
 
 const RegistroForm = () => {
   const router = useRouter();
+
+  // Estados (sin cambios)
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // [CORREGIDO] Estado 'rol' eliminado.
-  const [error, setError] = useState<string | null>(null);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  // [CORREGIDO] Roles disponibles eliminado.
-
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleLoginRedirect = (e: React.MouseEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-    
-    // ** 1. REGISTRO EN SUPABASE AUTH **
-    const { 
-      data: { user }, 
-      error: authError 
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: { 
-          nombre_completo: nombre, 
-          rol_inicial: 'Alumno' // <-- [CORREGIDO] Nuevo rol por defecto
-        } 
-      }
-    });
-
-    if (authError) {
-      setError(`Error de registro: ${authError.message}`);
-      setLoading(false);
-      return;
-    }
-    
-    if (!authError) {
-        alert(`¡Registro exitoso! Revisa tu correo ${email} para verificar la cuenta y poder iniciar sesión.`);
-        router.push('/'); 
-    }
-    
-    setLoading(false);
+    router.push('/login');
   };
 
+  // 3. Lógica de registro ACTUALIZADA
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    // Validaciones (sin cambios)
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden.');
+      return;
+    }
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // --- PASO ÚNICO: Llamar a nuestra API de backend ---
+      const response = await fetch('/api/registro', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          nombre_completo: nombre
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        // Si la respuesta no es 2xx, lanzamos el error que viene del backend
+        throw new Error(result.message || 'Error al registrar la cuenta.');
+      }
+
+      // --- Éxito ---
+      setSuccess(result.message); // Mostramos el mensaje de éxito del backend
+      setLoading(false);
+      
+      setTimeout(() => {
+        router.push('/login');
+      }, 3000);
+
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  // --- El JSX (return) no cambia en absoluto ---
   return (
     <div className="wrapper">
-      <form onSubmit={handleSignUp}>
+      <form onSubmit={handleSubmit}>
         <h1>Registro de Usuario</h1>
-        <p className="subtitle">Crea una nueva cuenta en SIGELIN de INACAP.</p>
         
-        {error && <div className="error-message">{error}</div>}
-
         <div className="input-box">
           <input 
             type="text" 
             placeholder="Nombre Completo" 
-            required
+            required 
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
           />
@@ -73,8 +97,8 @@ const RegistroForm = () => {
         <div className="input-box">
           <input 
             type="email" 
-            placeholder="Correo Institucional" 
-            required
+            placeholder="Ingresa tu correo" 
+            required 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -84,22 +108,35 @@ const RegistroForm = () => {
         <div className="input-box">
           <input 
             type="password" 
-            placeholder="Contraseña" 
-            required
+            placeholder="Ingresa tu contraseña" 
+            required 
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <FaLock className="icon" />
         </div>
-        
-        {/* [ELIMINADO] Selector de Rol */}
+
+        <div className="input-box">
+          <input 
+            type="password" 
+            placeholder="Confirma tu contraseña" 
+            required 
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          <FaLock className="icon" />
+        </div>
+
+        {error && <p style={{ color: '#ff7b7b', textAlign: 'center', marginBottom: '10px' }}>{error}</p>}
+        {success && <p style={{ color: '#7bff7b', textAlign: 'center', marginBottom: '10px' }}>{success}</p>}
+
 
         <button type="submit" className="btn" disabled={loading}>
-          {loading ? 'Registrando...' : 'Completar Registro'}
+          {loading ? 'Registrando...' : 'Registrarse'}
         </button>
 
         <div className="login-register">
-          <p>¿Ya tienes una cuenta? <a href="#" onClick={() => router.push('/')}>Iniciar Sesión</a></p>
+          <p>¿Ya tienes una cuenta? <a href="#" onClick={handleLoginRedirect}>Inicia Sesión</a></p>
         </div>
       </form>
     </div>
