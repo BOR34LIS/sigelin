@@ -1,23 +1,25 @@
-// En tu archivo ReporteComponent.tsx
+// components/reportar/ReporteComponent.tsx
 
 "use client";
 
 import React, { useState, useEffect } from 'react';
-// 1. IMPORTAMOS EL HOOK
-import { useSearchParams } from 'next/navigation'; 
 import './ReporteComponent.css'; 
+import { createClient } from '@supabase/supabase-js';
+import { useRouter } from 'next/navigation'; // <-- 1. IMPORTAR useRouter
 
-// 2. YA NO NECESITAMOS LA INTERFAZ DE PROPS
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+);
 
-function ReporteComponent() { // <-- Sin props
+interface ReporteComponentProps {
+  pcIdFromUrl: string | undefined;
+}
+
+function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
   
-  // 3. LLAMAMOS AL HOOK PARA OBTENER LOS PARÁMETROS
-  const searchParams = useSearchParams();
+  const router = useRouter(); // <-- 2. INICIALIZAR ROUTER
   
-  // 4. Extraemos el ID de los parámetros
-  const pcIdFromUrl = searchParams.get('id'); // .get('id') en lugar de .id
-
-  // Tus estados (sin cambios)
   const [pcId, setPcId] = useState('');
   const [sala, setSala] = useState('');
   const [computador, setComputador] = useState('');
@@ -25,31 +27,46 @@ function ReporteComponent() { // <-- Sin props
   const [tipoProblema, setTipoProblema] = useState('computador');
   const [descripcion, setDescripcion] = useState('');
   const [status, setStatus] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  // 5. El useEffect ahora reacciona a 'pcIdFromUrl' (que viene del hook)
   useEffect(() => {
-    
-    if (pcIdFromUrl && pcIdFromUrl.startsWith('LAB') && pcIdFromUrl.length === 8) {
-      const salaParsed = pcIdFromUrl.substring(3, 6); 
-      const pcParsed = pcIdFromUrl.substring(6, 8);   
+    // ... (Tu lógica de checkAuthAndLoadData sigue igual) ...
+    const checkAuthAndLoadData = async () => {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
 
-      setPcId(pcIdFromUrl);
-      setSala(salaParsed);
-      setComputador(pcParsed);
-      setStatus(''); 
-    } else {
-      setStatus('ID de equipo no válido o no encontrado.');
-    }
-  }, [pcIdFromUrl]); // El efecto se ejecuta cuando el hook termine de leer la URL
+      if (!user) {
+        setStatus('Acceso Denegado. Debes iniciar sesión para poder reportar.');
+        setLoading(false);
+        // Opcional: Redirigir al login si no está autenticado
+        router.push('/login'); 
+        return;
+      }
 
-  // ... (El resto de tu código: handleSubmit, y el return JSX ...)
-  // ... (No es necesario cambiar nada más en este archivo)
+      const cleanedPcId = pcIdFromUrl ? pcIdFromUrl.trim().toUpperCase() : '';
 
-  // Función que se ejecuta al enviar el formulario (sin cambios)
+      if (cleanedPcId.startsWith('LAB') && cleanedPcId.length === 8) {
+        const salaParsed = cleanedPcId.substring(3, 6);
+        const pcParsed = cleanedPcId.substring(6, 8);
+
+        setPcId(cleanedPcId);
+        setSala(salaParsed);
+        setComputador(pcParsed);
+        setStatus('');
+      } else {
+        setStatus('ID de equipo no válido o no encontrado.');
+      }
+      setLoading(false);
+    };
+
+    checkAuthAndLoadData();
+  }, [pcIdFromUrl, router]); // <-- 4. AÑADIR router A LAS DEPENDENCIAS
+
+  // ... (Tu función handleSubmit sigue igual) ...
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); 
     setStatus('Enviando reporte...');
-    // ... (resto del fetch sin cambios)
+
     const reporte = {
       pcId,
       sala,
@@ -85,18 +102,47 @@ function ReporteComponent() { // <-- Sin props
     }
   };
 
-  // Si aún no se ha cargado la info del PC, muestra un mensaje (sin cambios)
-  if (!pcId && !status) {
-    // Este mensaje ahora se mostrará si el ID es inválido.
-    // El "LoadingFallback" de page.tsx se mostrará ANTES.
-    return <div className="loadingMessage">{status || 'Cargando...'}</div>;
+
+  // --- 3. NUEVA FUNCIÓN PARA CERRAR SESIÓN ---
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error al cerrar sesión:', error.message);
+      } else {
+        // Redirigir al login después de cerrar sesión
+        router.push('/login');
+      }
+    } catch (err: any) {
+      console.error('Error inesperado:', err.message);
+    }
+  };
+
+  // ... (Tu lógica de 'if (loading)' y 'if (!pcId)' sigue igual) ...
+  if (loading) {
+    return <div className="loadingMessage">Verificando...</div>;
+  }
+
+  if (!pcId && status) {
+    return <div className="loadingMessage">{status}</div>;
   }
   
-  // Return JSX (sin cambios)
+  if (!pcId) {
+      return <div className="loadingMessage">ID de equipo no válido.</div>;
+  }
+
+
   return (
     <main className="main">
+      
+      {/* --- 5. BOTÓN DE CERRAR SESIÓN AÑADIDO --- */}
+      <button onClick={handleLogout} className="logoutButton">
+        Cerrar Sesión
+      </button>
+
       <div className="container">
         <h1 className="title">Reportar Incidencia</h1>
+        {/* ... (el resto de tu formulario JSX) ... */}
 
         <div className="infoBox">
           <p className="infoLabel">Estás reportando para:</p>
@@ -110,6 +156,7 @@ function ReporteComponent() { // <-- Sin props
         </div>
 
         <form onSubmit={handleSubmit} className="form">
+          {/* ... (tus inputs y selects) ... */}
           <div>
             <label htmlFor="tipo-problema" className="label">
               Tipo de Problema
@@ -154,6 +201,7 @@ function ReporteComponent() { // <-- Sin props
         </form>
 
         {status && <p className="statusMessage">{status}</p>}
+
       </div>
     </main>
   );

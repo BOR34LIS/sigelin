@@ -1,19 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import "./AdminForm.css";
-// Usando los iconos de Font Awesome para mantener la coherencia
-// Se añaden FaBoxOpen y FaUserPlus para Stock y Registrar
-import { FaUsers, FaChartBar, FaSignOutAlt, FaBoxOpen, FaUserPlus } from "react-icons/fa"; 
+import { useRouter } from 'next/navigation';
+import { FaUsers, FaChartBar, FaSignOutAlt, FaBoxOpen, FaUserPlus } from "react-icons/fa";
+import { createClient } from '@supabase/supabase-js'; // <-- 1. Importar Supabase
 
-// Interfaz para las propiedades del NavItem
+// --- 2. Inicializar el cliente público de Supabase ---
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+);
+
+// --- Componente NavItem (sin cambios) ---
 interface NavItemProps {
     icon: React.ElementType;
     text: string;
     onClick: () => void;
 }
 
-// Componente auxiliar para los items de navegación
 const NavItem: React.FC<NavItemProps> = ({ icon: Icon, text, onClick }) => (
   <div 
     className="nav-item"
@@ -26,17 +31,30 @@ const NavItem: React.FC<NavItemProps> = ({ icon: Icon, text, onClick }) => (
     </div>
   </div>
 );
+// --- Fin de NavItem ---
 
 
 const AdminForm = () => {
-    // Función de navegación de ejemplo
-    const handleNavigation = (view: string) => {
-        // Aquí se implementaría la lógica de enrutamiento (e.g., Next.js Router)
-        console.log(`Navegando a la vista: ${view}`);
+    const router = useRouter(); // Router para navegación
+    const [loading, setLoading] = useState(false); // Estado de carga para el logout
+
+    // --- 3. Función para manejar el Logout ---
+    const handleLogout = async () => {
+        setLoading(true);
+        try {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error("Error al cerrar sesión:", error.message);
+            }
+            router.push('/login'); // Redirigir al login
+        } catch (err) {
+            console.error("Error inesperado:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        // Reutilizamos la clase "wrapper" para mantener el mismo diseño de tarjeta
         <div className="wrapper">
             <div className="admin-container">
                 <h1>Panel de Administración</h1>
@@ -44,43 +62,36 @@ const AdminForm = () => {
                 
                 <div className="nav-items-container">
                     
-                    {/* Opción 1: Ver Stock de Repuestos (NUEVA) */}
+                    {/* --- 4. onClick actualizado para navegar --- */}
                     <NavItem 
                         icon={FaBoxOpen} 
                         text="Stock de Repuestos" 
-                        onClick={() => handleNavigation('stock')}
+                        onClick={() => router.push('/admin/inventario')}
                     />
 
-                    {/* Opción 2: Registrar Nuevo Usuario (NUEVA) */}
-                    <NavItem 
-                        icon={FaUserPlus} 
-                        text="Registrar Nuevo Usuario" 
-                        onClick={() => handleNavigation('registrar-usuario')}
-                    />
-
-                    {/* Opción 3: Ver Reportes */}
                     <NavItem 
                         icon={FaChartBar} 
                         text="Ver Reportes" 
-                        onClick={() => handleNavigation('reportes')}
+                        onClick={() => router.push('/admin/reportes')} // (Asegúrate que esta ruta exista)
                     />
 
-                    {/* Opción 4: Gestionar Usuarios */}
                     <NavItem 
                         icon={FaUsers} 
                         text="Gestionar Usuarios" 
-                        onClick={() => handleNavigation('usuarios')}
+                        onClick={() => router.push('/admin/usuarios')} // (Asegúrate que esta ruta exista)
                     />
                     
                 </div>
 
-                {/* Botón de Cerrar Sesión */}
+                {/* --- 5. Botón de Logout conectado y con estado de carga --- */}
                 <button 
                     type="button" 
                     className="btn logout-btn"
-                    onClick={() => handleNavigation('logout')}
+                    onClick={handleLogout}
+                    disabled={loading} // Deshabilitar mientras carga
                 >
-                    <FaSignOutAlt className="btn-icon" /> Cerrar Sesión
+                    <FaSignOutAlt className="btn-icon" /> 
+                    {loading ? 'Cerrando...' : 'Cerrar Sesión'}
                 </button>
             </div>
         </div>
