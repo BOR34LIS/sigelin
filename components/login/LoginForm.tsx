@@ -1,36 +1,35 @@
-// components/login/LoginForm.tsx
-
 "use client";
 
 import React, { useState } from "react";
 import "./LoginForm.css";
 import { FaUser, FaLock } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from '@/lib/supabase/client';
 
 const LoginForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // 2. ESTADOS PARA MANEJAR EL FORMULARIO
+  // estados para el formulario
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Redirigir a registro (esto ya lo tenías y estaba bien)
+  // redirección a la página de registro
   const handleSignUpRedirect = (e: React.MouseEvent) => {
     e.preventDefault();
     router.push('/registro');
   };
 
-  // 3. FUNCIÓN DE LOGIN
+  // 3. función para manejar el envío del formulario
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Previene que la página se recargue
+    e.preventDefault(); // para que no recargue la página
     setError('');
     setLoading(true);
 
     try {
-      // 4. LLAMADA A SUPABASE AUTH PARA INICIAR SESIÓN
+      // llamamos a supabase para iniciar sesión
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
@@ -41,12 +40,17 @@ const LoginForm = () => {
       }
 
       if (data.user) {
-        // ¡Éxito! Redirigir al usuario a la página principal o a reportar
-        router.push('/reportar');
+        // si el inicio de sesión es exitoso, redirigir al usuario
+        const redirectUrl = searchParams.get('redirect');
+        if (redirectUrl){
+          router.push(redirectUrl);
+        } else {
+          router.push('/reportar'); // redirigir a reportar, aunque va a dar error porque no tiene id
+        }
       }
 
     } catch (err: any) {
-      // 5. MANEJO DE ERRORES
+      // manejo de errores
       setError(`Error: ${err.message}`);
     } finally {
       setLoading(false);
@@ -55,11 +59,8 @@ const LoginForm = () => {
 
   return (
     <div className="wrapper">
-      {/* 6. CONECTAR EL FORMULARIO AL HANDLER */}
       <form onSubmit={handleLogin}>
         <h1>Login</h1>
-
-        {/* Mensaje de error */}
         {error && <p style={{ color: '#ff7b7b', textAlign: 'center' }}>{error}</p>}
 
         <div className="input-box">
@@ -85,9 +86,6 @@ const LoginForm = () => {
         </div>
 
         <div className="remember-forgot">
-          <label>
-            <input type="checkbox" />Recuérdame
-          </label>
           <a href="#">Olvidaste tu contraseña?</a>
         </div>
 

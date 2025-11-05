@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
-import './GestionUsuarios.css';
+import React, { useState, useEffect, useMemo } from "react";
+import { supabase } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import "./GestionUsuarios.css";
 
-// Definimos el tipo de dato para un perfil de usuario
+// definición del tipo de usuario
 type UserProfile = {
   id: string; // UUID
   nombre_completo: string;
   email: string;
-  rol: 'administrador' | 'tecnico' | 'coordinador' | 'Alumno';
+  rol: "administrador" | "tecnico" | "coordinador" | "alumno";
 };
 
-// Lista de roles permitidos por tu BD
-const ROLES_PERMITIDOS = ['administrador', 'tecnico', 'coordinador', 'alumno'];
+// roles permitidos en la bd (CUALQUIER OTRO NO FUNCIONAAAAA)
+const ROLES_PERMITIDOS = ["administrador", "tecnico", "coordinador", "alumno"];
 
 export default function GestionUsuariosComponent() {
   const router = useRouter();
@@ -22,56 +22,59 @@ export default function GestionUsuariosComponent() {
   // Estados de la UI
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false); // Estado para el botón de guardar
-  const [saveStatus, setSaveStatus] = useState<{type: 'success' | 'error', msg: string} | null>(null);
-  
-  // Estados de los datos
-  const [allUsers, setAllUsers] = useState<UserProfile[]>([]); // Lista maestra original
-  const [userRoles, setUserRoles] = useState<Record<string, string>>({}); // Estado para los roles editados
-  const [searchTerm, setSearchTerm] = useState('');
+  const [isSaving, setIsSaving] = useState(false); // estado para el botón de guardar
+  const [saveStatus, setSaveStatus] = useState<{
+    type: "success" | "error";
+    msg: string;
+  } | null>(null);
 
-  // Lista filtrada (sin cambios en la lógica de filtro)
+  // Estados de los datos
+  const [allUsers, setAllUsers] = useState<UserProfile[]>([]); // lista original de usuarios
+  const [userRoles, setUserRoles] = useState<Record<string, string>>({}); // estado para los roles editados
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // busqueda con email
   const filteredUsers = useMemo(() => {
     if (!searchTerm) return allUsers;
-    return allUsers.filter(user =>
+    return allUsers.filter((user) =>
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [allUsers, searchTerm]);
 
-  // Hook de carga inicial y verificación de admin
+  // verificación de admin y carga de usuarios
   useEffect(() => {
     async function checkAdminAndFetchUsers() {
       try {
-        // ... (Verificación de admin igual que antes) ...
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (!user) {
-          router.push('/login');
+          router.push("/login");
           return;
         }
 
         const { data: profile, error: profileError } = await supabase
-          .from('usuarios')
-          .select('rol')
-          .eq('id', user.id)
+          .from("usuarios")
+          .select("rol")
+          .eq("id", user.id)
           .single();
-
-        if (profileError || profile?.rol !== 'administrador') {
+        // mensaje de error si no es admin
+        if (profileError || profile?.rol !== "administrador") {
           setError("Acceso Denegado. No tienes permisos de administrador.");
           setLoading(false);
           return;
         }
 
-        // Si es admin, cargar TODOS los usuarios
+        // si es admin, cargar TODOS los usuarios
         const { data: usersData, error: usersError } = await supabase
-          .from('usuarios')
-          .select('id, nombre_completo, email, rol');
+          .from("usuarios")
+          .select("id, nombre_completo, email, rol");
 
         if (usersError) throw usersError;
 
         setAllUsers(usersData || []);
-        
-        // --- ¡NUEVO! ---
-        // Inicializar el estado de 'userRoles' con los roles actuales
+
+        // inicializar el estado de roles con los roles actuales de los usuarios
         const initialRoles: Record<string, string> = {};
         if (usersData) {
           for (const user of usersData) {
@@ -79,7 +82,6 @@ export default function GestionUsuariosComponent() {
           }
         }
         setUserRoles(initialRoles);
-
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -89,29 +91,21 @@ export default function GestionUsuariosComponent() {
 
     checkAdminAndFetchUsers();
   }, [router]);
-
-  // --- ¡LÓGICA ACTUALIZADA! ---
-  // Esta función AHORA solo actualiza el estado local
+  // manejar cambios en los roles localmente
   const handleRoleChange = (userId: string, newRole: string) => {
-    setUserRoles(prevRoles => ({
+    setUserRoles((prevRoles) => ({
       ...prevRoles,
       [userId]: newRole,
     }));
-    setSaveStatus(null); // Ocultar mensaje de éxito/error si se hace un nuevo cambio
+    setSaveStatus(null);
   };
-
-  // components/admin/GestionUsuarios.tsx
-
-// ... (todo tu código anterior: imports, useState, useEffect, etc.) ...
-
-  // --- ¡NUEVA FUNCIÓN! ---
-  // Esta función se llama al presionar el botón "Guardar Cambios"
+  // manejar guardado de todos los cambios
   const handleSaveAllChanges = async () => {
     setIsSaving(true);
     setSaveStatus(null);
 
-    // 1. Encontrar qué roles realmente cambiaron (esta lógica no cambia)
-    const updates: { id: string, rol: string }[] = [];
+    // verificar qué usuarios tienen cambios
+    const updates: { id: string; rol: string }[] = [];
     for (const user of allUsers) {
       const originalRole = user.rol;
       const newRole = userRoles[user.id];
@@ -120,68 +114,67 @@ export default function GestionUsuariosComponent() {
       }
     }
 
-    // 2. Si no hay cambios, no hacer nada (esta lógica no cambia)
+    // si no hay cambios, entregar este mensaje
     if (updates.length === 0) {
-      setSaveStatus({ type: 'success', msg: 'No había cambios que guardar.' });
+      setSaveStatus({ type: "success", msg: "No había cambios que guardar." });
       setIsSaving(false);
       return;
     }
 
-    // --- 3. ¡LÓGICA DE GUARDADO ACTUALIZADA! ---
-    // En lugar de 'upsert', iteramos y usamos 'update' para cada cambio.
-    // Esto coincide perfectamente con nuestra política RLS de UPDATE.
+    // realizar las actualizaciones en la base de datos
     try {
       for (const update of updates) {
         const { error } = await supabase
-          .from('usuarios')
-          .update({ rol: update.rol }) // Solo actualiza el rol
-          .eq('id', update.id);        // Donde el ID coincida
+          .from("usuarios")
+          .update({ rol: update.rol }) // solo actualiza el rol
+          .eq("id", update.id); // donde el ID coincida
 
-        // Si cualquier actualización falla, nos detenemos y reportamos el error
+        // si cualquier actualización falla, nos detenemos y reportamos el error
         if (error) {
           throw error;
         }
       }
 
-      // 4. Éxito: Actualizar la lista "maestra" (allUsers)
-      setAllUsers(prevUsers =>
-        prevUsers.map(user => {
+      // actualizar el estado localmente después de guardar con éxito
+      setAllUsers((prevUsers) =>
+        prevUsers.map((user) => {
           const newRole = userRoles[user.id];
-          return user.rol !== newRole ? { ...user, rol: newRole as UserProfile['rol'] } : user;
+          return user.rol !== newRole
+            ? { ...user, rol: newRole as UserProfile["rol"] }
+            : user;
         })
       );
 
-      setSaveStatus({ type: 'success', msg: '¡Cambios guardados con éxito!' });
+      setSaveStatus({ type: "success", msg: "¡Cambios guardados con éxito!" });
     } catch (err: any) {
-      setSaveStatus({ type: 'error', msg: `Error al guardar: ${err.message}` });
+      setSaveStatus({ type: "error", msg: `Error al guardar: ${err.message}` });
     } finally {
       setIsSaving(false);
     }
   };
-
-// ... (todo tu código posterior: el return, el JSX, etc.) ...
-
-  // --- Renderizado ---
-
+  // renderizado condicional basado en el estado
   if (loading) {
-    return <div className="admin-loader">Verificando acceso y cargando usuarios...</div>;
+    return (
+      <div className="admin-loader">
+        Verificando acceso y cargando usuarios...
+      </div>
+    );
   }
 
   if (error) {
     return <div className="admin-error-message">{error}</div>;
   }
 
-  
   return (
     <div className="gestion-container">
       <div className="admin-nav-buttons">
-        <button onClick={() => router.push('/admin')} className="admin-nav-btn">
+        <button onClick={() => router.push("/admin")} className="admin-nav-btn">
           Volver al Menú
         </button>
       </div>
 
       <h1 className="gestion-title">Gestionar Usuarios</h1>
-      
+
       <input
         type="text"
         placeholder="Buscar por correo electrónico..."
@@ -190,14 +183,13 @@ export default function GestionUsuariosComponent() {
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-      {/* --- ¡NUEVO! Botón de Guardar y Mensaje de Estado --- */}
       <div className="save-container">
         <button
           className="admin-save-btn"
           onClick={handleSaveAllChanges}
           disabled={isSaving}
         >
-          {isSaving ? 'Guardando...' : 'Guardar Cambios'}
+          {isSaving ? "Guardando..." : "Guardar Cambios"}
         </button>
         {saveStatus && (
           <span className={`save-status ${saveStatus.type}`}>
@@ -220,19 +212,15 @@ export default function GestionUsuariosComponent() {
               <td className="admin-td">{user.nombre_completo}</td>
               <td className="admin-td">{user.email}</td>
               <td className="admin-td">
-                {/* El valor ahora viene del estado 'userRoles'.
-                  'user.rol' se muestra la primera vez.
-                  'userRoles[user.id]' muestra el valor editado.
-                */}
                 <select
                   className="role-select"
-                  value={userRoles[user.id] || user.rol} // Leer desde el estado local
+                  value={userRoles[user.id] || user.rol}
                   onChange={(e) => handleRoleChange(user.id, e.target.value)}
                   disabled={isSaving}
                 >
-                  {ROLES_PERMITIDOS.map(rol => (
+                  {ROLES_PERMITIDOS.map((rol) => (
                     <option key={rol} value={rol}>
-                      {rol.charAt(0).toUpperCase() + rol.slice(1)} 
+                      {rol.charAt(0).toUpperCase() + rol.slice(1)}
                     </option>
                   ))}
                 </select>
@@ -241,7 +229,9 @@ export default function GestionUsuariosComponent() {
           ))}
         </tbody>
       </table>
-      {filteredUsers.length === 0 && <p className="no-results">No se encontraron usuarios.</p>}
+      {filteredUsers.length === 0 && (
+        <p className="no-results">No se encontraron usuarios.</p>
+      )}
     </div>
   );
 }
