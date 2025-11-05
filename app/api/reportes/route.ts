@@ -20,6 +20,7 @@ export async function POST(request: Request) {
           descripcion_problema: reporte.descripcion,
           estado: reporte.estado,
           created_at: reporte.fecha,
+          usuario_reporta_id: reporte.usuario_reporta_id,
         },
       ])
       .select();

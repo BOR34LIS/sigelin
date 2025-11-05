@@ -59,7 +59,11 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus("Enviando reporte...");
-
+    const {data: { user }} = await supabase.auth.getUser();
+    if (!user) {
+      setStatus("No autenticado. Por favor, inicia sesión de nuevo.");
+      return;
+    }
     const reporte = {
       pcId,
       sala,
