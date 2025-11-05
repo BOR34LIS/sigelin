@@ -72,6 +72,7 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
       descripcion,
       fecha: new Date().toISOString(),
       estado: "Abierto",
+      usuario_reporta_id: user.id,
     };
 
     try {
