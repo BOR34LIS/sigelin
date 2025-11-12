@@ -6,19 +6,18 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { FaPlusCircle, FaEdit, FaTrash } from "react-icons/fa"; // <-- Iconos añadidos
 
-// Tipo de dato actualizado (sin puesto_trabajo)
+// Tipo de dato para las ubicaciones
 type Ubicacion = {
   id: number;
   piso: string;
   tipo_sala: string;
   descripcion: string | null;
 };
-
-// --- Sub-componente del Formulario (Modificado para Editar) ---
+// Sub-componente del Formulario de Añadir / Editar
 interface AddFormProps {
-  initialData?: Ubicacion; // Opcional: para modo edición
+  initialData?: Ubicacion;
   onAdd: (newUbicacion: Ubicacion) => void;
-  onUpdate: (updatedUbicacion: Ubicacion) => void; // Nuevo callback
+  onUpdate: (updatedUbicacion: Ubicacion) => void;
   onCancel: () => void;
 }
 
@@ -41,7 +40,7 @@ const AddUbicacionForm: React.FC<AddFormProps> = ({ initialData, onAdd, onUpdate
 
     try {
       if (isEditMode) {
-        // --- LÓGICA DE ACTUALIZACIÓN (UPDATE) ---
+        // LÓGICA DE ACTUALIZACIÓN (UPDATE)
         const { data, error: updateError } = await supabase
           .from('ubicaciones')
           .update({
@@ -57,7 +56,7 @@ const AddUbicacionForm: React.FC<AddFormProps> = ({ initialData, onAdd, onUpdate
         onUpdate(data as Ubicacion); // Llamar al callback de actualización
 
       } else {
-        // --- LÓGICA DE CREACIÓN (INSERT) ---
+        // LÓGICA DE CREACIÓN (INSERT)
         const { data, error: insertError } = await supabase
           .from('ubicaciones')
           .insert({
@@ -88,7 +87,6 @@ const AddUbicacionForm: React.FC<AddFormProps> = ({ initialData, onAdd, onUpdate
 
   return (
     <div className="add-form-container">
-      {/* Título dinámico */}
       <h2>{isEditMode ? 'Editar Ubicación' : 'Añadir Nueva Ubicación'}</h2>
       <form onSubmit={handleSubmit} className="add-form">
         <div className="form-row">
@@ -146,17 +144,17 @@ const AddUbicacionForm: React.FC<AddFormProps> = ({ initialData, onAdd, onUpdate
     </div>
   );
 };
-// --- Fin del Sub-componente Formulario ---
 
 
-// --- Sub-componente del Modal de Confirmación ---
+
+// Sub-componente del Modal de Confirmación
 interface DeleteModalProps {
   ubicacion: Ubicacion;
   onConfirm: () => void;
   onCancel: () => void;
   isDeleting: boolean;
 }
-
+// Componente del Modal de Confirmación de Eliminación
 const DeleteConfirmationModal: React.FC<DeleteModalProps> = ({ ubicacion, onConfirm, onCancel, isDeleting }) => (
   <div className="modal-overlay">
     <div className="modal-content">
@@ -177,7 +175,6 @@ const DeleteConfirmationModal: React.FC<DeleteModalProps> = ({ ubicacion, onConf
     </div>
   </div>
 );
-// --- Fin del Modal ---
 
 
 export default function GestionUbicacionesComponent() {
@@ -185,17 +182,14 @@ export default function GestionUbicacionesComponent() {
   const [ubicaciones, setUbicaciones] = useState<Ubicacion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // --- Nuevos estados para controlar los flujos ---
   const [showAddForm, setShowAddForm] = useState(false);
   const [isEditing, setIsEditing] = useState<Ubicacion | null>(null);
   const [isDeleting, setIsDeleting] = useState<Ubicacion | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
-    // ... (El fetch de datos y verificación de admin no cambia) ...
     async function checkAdminAndFetchUbicaciones() {
-      // ... (código de verificación de admin) ...
+// Verificar si el usuario es admin
       try {
         setLoading(true);
         setError(null);
@@ -224,7 +218,6 @@ export default function GestionUbicacionesComponent() {
     checkAdminAndFetchUbicaciones();
   }, []);
 
-  // --- Nuevos Handlers ---
   const handleUbicacionAdded = (newUbicacion: Ubicacion) => {
     setUbicaciones(currentList => [...currentList, newUbicacion]);
     setShowAddForm(false);
@@ -259,7 +252,6 @@ export default function GestionUbicacionesComponent() {
 
     } catch (err: any) {
       console.error("Error al eliminar:", err.message);
-      // Aquí se podría mostrar un toast de error
     } finally {
       setDeleteLoading(false);
     }
@@ -267,7 +259,6 @@ export default function GestionUbicacionesComponent() {
   
   const handleGoToMenu = () => router.push('/admin');
 
-  // --- Renderizado ---
   if (loading) {
     return <div className="admin-loader">Verificando acceso y cargando ubicaciones...</div>;
   }
@@ -322,7 +313,7 @@ export default function GestionUbicacionesComponent() {
             <th className="admin-th">Piso</th>
             <th className="admin-th">Tipo Sala</th>
             <th className="admin-th">Descripción</th>
-            <th className="admin-th actions-col">Acciones</th> {/* <-- Nueva Columna */}
+            <th className="admin-th actions-col">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -332,7 +323,6 @@ export default function GestionUbicacionesComponent() {
               <td className="admin-td">{ubicacion.piso}</td>
               <td className="admin-td">{ubicacion.tipo_sala}</td>
               <td className="admin-td">{ubicacion.descripcion || 'N/A'}</td>
-              {/* --- Nuevos Botones de Acción --- */}
               <td className="admin-td actions-col">
                 <button
                   className="action-btn edit"

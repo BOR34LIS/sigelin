@@ -10,8 +10,8 @@ import {
   FaBoxOpen,
   FaUserPlus,
   FaSpinner,
-  FaLaptop, // <-- 1. ICONO AÑADIDO
-  FaMapMarkerAlt, // <-- 2. ICONO AÑADIDO
+  FaLaptop,
+  FaMapMarkerAlt,
 } from "react-icons/fa";
 import { supabase } from "@/lib/supabase/client";
 
@@ -68,7 +68,7 @@ const AdminForm = () => {
 
       // comprobamos el rol
       if (profile.rol === "administrador") {
-        setIsAuthorized(true); // ¡Acceso permitido!
+        setIsAuthorized(true);
       }
 
       // terminamos de cargar (si no es admin, isAuthorized seguirá en false)
@@ -76,7 +76,7 @@ const AdminForm = () => {
     };
 
     checkAdminAccess();
-  }, [router]); // Se ejecuta una vez al cargar
+  }, [router]);
 
   // handler para el logout
   const handleLogout = async () => {
@@ -94,7 +94,6 @@ const AdminForm = () => {
     }
   };
 
-  // ... (los return de 'isLoading' y 'isAuthorized' no cambian) ...
   // estado de carga inicial
   if (isLoading) {
     return (
@@ -162,7 +161,6 @@ const AdminForm = () => {
             onClick={() => router.push("/admin/usuarios")}
           />
 
-          {/* --- 3. BOTONES AÑADIDOS --- */}
           <NavItem
             icon={FaLaptop}
             text="Gestionar Equipos"

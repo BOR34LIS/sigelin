@@ -63,14 +63,15 @@
     @apply border-border;
   }
   body {
-  font-family: 'Poppins', sans-serif; /* (Asegúrate de importar 'Poppins' si la quieres global) */
-  
-  /* Fondo con gradiente del Login */
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+
+  /* Esto asegura que el fondo oscuro esté SIEMPRE presente */
   background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-  background-attachment: fixed; /* Evita que el gradiente se mueva con el scroll */
+  background-attachment: fixed; /* Mantiene el gradiente fijo */
   background-size: cover;
-  
-  /* Color de texto por defecto para que sea legible en el fondo oscuro */
-  color: #ffffff; 
+
+  /* Color de texto global por defecto */
+  color: #ffffff;
 }
 }

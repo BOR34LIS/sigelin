@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { FaPlusCircle } from "react-icons/fa";
 
-// --- Definición de Tipos ---
+// Definición de Tipos
 type Equipo = {
   id: string;
   tipo_equipo: string;
@@ -22,8 +22,7 @@ type Ubicacion = {
   tipo_sala: string;
 };
 
-// --- Datos Prefabricados (Formulario) ---
-// ... (El objeto PREFAB_DATA y TIPOS_DE_EQUIPO no cambian) ...
+// Datos Prefabricados (Formulario)
 const PREFAB_DATA: Record<string, { marca: string; modelo: string }[]> = {
   'Torre': [
     { marca: 'Dell', modelo: 'Dell Optiplex 3070' },
@@ -50,17 +49,16 @@ const PREFAB_DATA: Record<string, { marca: string; modelo: string }[]> = {
 };
 const TIPOS_DE_EQUIPO = Object.keys(PREFAB_DATA);
 
-// --- Lista de Estados Permitidos (de tu solicitud) ---
+// Lista de Estados Permitidos
 const ESTADOS_PERMITIDOS = ['Activo', 'En reparación', 'Dado de baja'];
 
-// --- Sub-componente del Formulario de Alta (Sin Cambios) ---
+// Sub-componente del Formulario de Alta (Sin Cambios)
 interface AddFormProps {
   ubicaciones: Ubicacion[];
   onAdd: (newEquipo: Equipo) => void;
   onCancel: () => void;
 }
 const AddEquipoForm: React.FC<AddFormProps> = ({ ubicaciones, onAdd, onCancel }) => {
-  // ... (El código de AddEquipoForm de la respuesta anterior va aquí, sin cambios) ...
   const [numeroEquipo, setNumeroEquipo] = useState('');
   const [generatedId, setGeneratedId] = useState('');
   const [numeroSerie, setNumeroSerie] = useState('');
@@ -222,10 +220,8 @@ const AddEquipoForm: React.FC<AddFormProps> = ({ ubicaciones, onAdd, onCancel })
     </div>
   );
 };
-// --- Fin del Sub-componente Formulario ---
 
 
-// --- Componente Principal (Actualizado) ---
 export default function GestionEquiposComponent() {
   const router = useRouter();
   const [equipos, setEquipos] = useState<Equipo[]>([]); // Lista maestra
@@ -233,9 +229,7 @@ export default function GestionEquiposComponent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  
-  // --- NUEVOS ESTADOS PARA EDICIÓN ---
-  const [editedEstados, setEditedEstados] = useState<Record<string, string>>({}); // { "LAB40801": "En reparación" }
+  const [editedEstados, setEditedEstados] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<{type: 'success' | 'error', msg: string} | null>(null);
 
@@ -244,7 +238,7 @@ export default function GestionEquiposComponent() {
       try {
         setLoading(true);
         setError(null);
-        // 1. Verificar Admin (sin cambios)
+        // 1. Verificar Admin
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) { throw new Error("No has iniciado sesión."); }
         const { data: profile, error: profileError } = await supabase
@@ -255,8 +249,7 @@ export default function GestionEquiposComponent() {
         if (profileError || profile?.rol !== 'administrador') {
           throw new Error("Acceso Denegado. Esta página es solo para administradores.");
         }
-        
-        // 2. Cargar datos (sin cambios)
+        // 2. Cargar datos
         const [ubicacionesRes, equiposRes] = await Promise.all([
           supabase.from('ubicaciones').select('id, piso, tipo_sala'),
           supabase.from('equipos').select('*').order('id', { ascending: true })
@@ -269,7 +262,7 @@ export default function GestionEquiposComponent() {
         setUbicaciones(ubicacionesRes.data || []);
         setEquipos(equiposData);
 
-        // --- NUEVO: Inicializar el estado de 'editedEstados' ---
+        // Inicializar el estado de 'editedEstados'
         const initialEstados: Record<string, string> = {};
         for (const eq of equiposData) {
           initialEstados[eq.id] = eq.estado;
@@ -285,18 +278,18 @@ export default function GestionEquiposComponent() {
     checkAdminAndFetchData();
   }, []);
 
-  // --- NUEVO: Handler para cambiar el estado local ---
+  // Handler para cambiar el estado local
   const handleEstadoChange = (equipoId: string, newEstado: string) => {
     setEditedEstados(prev => ({ ...prev, [equipoId]: newEstado }));
     setSaveStatus(null); // Borrar mensajes de guardado
   };
 
-  // --- NUEVO: Handler para guardar todos los cambios ---
+  // Handler para guardar todos los cambios
   const handleSaveAllChanges = async () => {
     setIsSaving(true);
     setSaveStatus(null);
 
-    // 1. Encontrar qué estados realmente cambiaron
+    // Encontrar qué estados realmente cambiaron
     const updates: { id: string, estado: string }[] = [];
     for (const eq of equipos) {
       const originalEstado = eq.estado;
@@ -312,7 +305,7 @@ export default function GestionEquiposComponent() {
       return;
     }
 
-    // 2. Enviar los cambios como updates individuales (más seguro para RLS)
+    // Enviar los cambios como updates individuales (más seguro para RLS)
     try {
       for (const update of updates) {
         const { error } = await supabase
@@ -322,7 +315,7 @@ export default function GestionEquiposComponent() {
         if (error) throw error;
       }
 
-      // 3. Éxito: Actualizar la lista "maestra" (equipos)
+      // Actualizar la lista "maestra" (equipos)
       setEquipos(prevEquipos =>
         prevEquipos.map(eq => ({
           ...eq,
@@ -338,7 +331,6 @@ export default function GestionEquiposComponent() {
     }
   };
 
-  // --- Actualizado: handleEquipoAdded ---
   const handleEquipoAdded = (newEquipo: Equipo) => {
     // Añadir a la lista maestra
     setEquipos(currentList => 
@@ -350,7 +342,7 @@ export default function GestionEquiposComponent() {
   
   const handleGoToMenu = () => router.push('/admin');
 
-  // --- Renderizado (con estados de carga/error) ---
+  // Renderizado (con estados de carga/error)
   if (loading) {
     return <div className="admin-loader">Verificando acceso y cargando datos...</div>;
   }
@@ -394,7 +386,6 @@ export default function GestionEquiposComponent() {
         />
       )}
       
-      {/* --- ¡NUEVO! Contenedor del botón de Guardar --- */}
       <div className="save-container">
         <button
           className="admin-save-btn"
@@ -431,7 +422,6 @@ export default function GestionEquiposComponent() {
               <td className="admin-td">{equipo.modelo}</td>
               <td className="admin-td">{equipo.numero_serie}</td>
               
-              {/* --- ¡COLUMNA ACTUALIZADA! --- */}
               <td className="admin-td">
                 <select
                   className="status-select"

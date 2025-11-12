@@ -1,9 +1,6 @@
-/* Reutiliza la estética "frosted glass" de Inventario.css */
 .gestion-container {
-  position: relative;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
@@ -11,6 +8,27 @@
   color: #ffffff;
   max-width: 1200px;
   margin: 2rem auto;
+
+  /* 1. Usamos Grid para el layout */
+  display: grid;
+  
+  /* 2. Definimos dos columnas: una para el título, otra para los botones */
+  grid-template-columns: 1fr auto; 
+  
+  /* 3. Definimos las filas (header, search, save, table, etc.) */
+  /* Esto le dice al grid que ponga todo lo demás en una nueva fila
+      que ocupe ambas columnas (span 2) */
+  grid-template-rows: auto;
+  grid-auto-flow: row; /* Elementos nuevos van a filas nuevas */
+  
+  /* 4. Asignamos las áreas */
+  grid-template-areas:
+    "header nav"   /* Fila 1: Título y Botones */
+    "search search" /* Fila 2: Barra de búsqueda */
+    "save   save"   /* Fila 3: Botón de Guardar */
+    "table  table"; /* Fila 4: Tabla */
+  
+  gap: 1.5rem; /* Espacio entre todas las áreas */
 }
 
 .gestion-title {
@@ -23,7 +41,7 @@
   padding-top: 2rem;
 }
 
-/* --- NUEVO: Barra de Búsqueda --- */
+/* NUEVO: Barra de Búsqueda */
 .search-bar {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -39,7 +57,7 @@
   color: #eeeeee;
 }
 
-/* --- Estilos de Tabla (Reutilizados de Inventario) --- */
+/* Estilos de Tabla (Reutilizados de Inventario) */
 .admin-table {
   width: 100%;
   border-collapse: collapse;
@@ -61,7 +79,7 @@
   vertical-align: middle;
 }
 
-/* --- NUEVO: Select de Rol --- */
+/* Select de Rol */
 .role-select {
   padding: 0.5rem;
   background-color: #1a1a2e; /* Fondo oscuro */
@@ -88,14 +106,13 @@
   font-size: 1.1rem;
 }
 
-/* --- Estilos de Botones (Reutilizados de Inventario) --- */
+/* Estilos de Botones (Reutilizados de Inventario) */
 .admin-nav-buttons {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
+  grid-area: nav; /* <-- ASIGNA AL ÁREA 'nav' DEL GRID */
   display: flex;
   gap: 0.75rem;
-  z-index: 10;
+  align-items: center;
+  justify-self: end;
 }
 .admin-nav-btn {
   padding: 0.5rem 1rem;
@@ -112,7 +129,7 @@
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* --- Estados de Carga/Error (Reutilizados) --- */
+/* Estados de Carga/Error (Reutilizados) */
 .admin-loader, .admin-error-message {
   /* Reutiliza el wrapper para el fondo */
   background: rgba(255, 255, 255, 0.1);
@@ -137,7 +154,7 @@
 
 /* ... (todos tus estilos anteriores: .gestion-container, .admin-table, etc.) ... */
 
-/* --- ¡NUEVOS ESTILOS! --- */
+/* ¡NUEVOS ESTILOS! */
 
 /* Contenedor para el botón de Guardar y el mensaje de estado */
 .save-container {
@@ -185,4 +202,32 @@
 
 .save-status.error {
   color: #ff7b7b; /* Rojo brillante */
+}
+.gestion-header, .inventario-header {
+  grid-area: header; /* Asigna el título al área 'header' */
+  /* Quita cualquier padding-top que le hayas puesto para "arreglar" el bug */
+  padding-top: 0; 
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.search-bar {
+  grid-area: search; /* Asigna la barra de búsqueda al área 'search' */
+  width: 100%;
+  box-sizing: border-box; /* Importante para que el padding no rompa el width */
+}
+
+.save-container {
+  grid-area: save; /* Asigna el botón de guardar al área 'save' */
+  justify-content: flex-end; /* Alinea a la derecha */
+}
+
+.admin-table, .inventario-table {
+  grid-area: table; /* Asigna la tabla al área 'table' */
+  grid-column: 1 / -1; /* Asegura que la tabla ocupe todo el ancho */
+}
+
+.no-results {
+  grid-area: table; /* Ocupa el mismo lugar que la tabla */
+  text-align: center;
+  margin-top: 2rem;
 }

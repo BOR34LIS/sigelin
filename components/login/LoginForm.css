@@ -8,18 +8,6 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Poppins', sans-serif;
-  /* Centra el formulario en la página */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  /* Fondo con gradiente */
-  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-  background-size: cover;
-}
-
 /* --- Contenedor Principal (Tarjeta) --- */
 .wrapper {
   width: 420px;
