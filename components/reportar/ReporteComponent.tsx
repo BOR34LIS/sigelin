@@ -39,16 +39,28 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
 
       const cleanedPcId = pcIdFromUrl ? pcIdFromUrl.trim().toUpperCase() : "";
 
-      if (cleanedPcId.startsWith("LAB") && cleanedPcId.length === 8) {
-        const salaParsed = cleanedPcId.substring(3, 6);
-        const pcParsed = cleanedPcId.substring(6, 8);
+      if (cleanedPcId) {
+        const {data: pcData, error: pcError } = await supabase
+        .from('equipos')
+        .select('id, ubicaciones (sala_laboratorio)')
+        .eq('id', cleanedPcId)
+        .single();
 
-        setPcId(cleanedPcId);
-        setSala(salaParsed);
-        setComputador(pcParsed);
+        if (pcError || !pcData) {
+          setStatus(`El ID de equipo "${cleanedPcId}" no es válido.`);
+          setLoading(false);
+          return;
+        }
+        setPcId(pcData.id);
+        if (pcData.ubicaciones) {
+          setSala((pcData.ubicaciones as any).sala_laboratorio || "Sala no asignada");
+        } else {
+          setSala("Sala no asignada");
+        }
+
         setStatus("");
       } else {
-        setStatus("ID de equipo no válido o no encontrado.");
+        setStatus("ID de equipo no proporcionado en la URL.");
       }
       setLoading(false);
     };
@@ -65,9 +77,7 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
       return;
     }
     const reporte = {
-      pcId,
-      sala,
-      computador,
+      pcId, // Este es el 'equipo_id'
       tipoProblema,
       descripcion,
       fecha: new Date().toISOString(),
@@ -91,7 +101,7 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
       const result = await response.json();
       console.log("Reporte enviado:", result);
       setStatus(
-        `¡Reporte para el PC ${computador} de la sala ${sala} enviado con éxito!`
+        `¡Reporte para el equipo ${pcId} enviado con éxito!` // Mensaje actualizado
       );
       setDescripcion("");
       setTipoProblema("computador");
@@ -139,12 +149,11 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
         <div className="infoBox">
           <p className="infoLabel">Estás reportando para:</p>
           <p className="infoData">
-            Computador: <span className="infoDataHighlight">{computador}</span>
+            ID de Equipo: <span className="infoDataHighlight">{pcId}</span>
           </p>
           <p className="infoData">
             Sala: <span className="infoDataHighlight">{sala}</span>
           </p>
-          <p className="infoId">ID Completo: {pcId}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="form">
