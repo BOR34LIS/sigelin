@@ -1,40 +1,35 @@
-/* Importar una fuente de Google (opcional, pero recomendado) */
+/* LoginForm.css */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-/* --- Estilos Globales y del Body --- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* --- Contenedor Principal (Tarjeta) --- */
+/* El estilo del 'body' YA NO VA AQUÍ, debe estar en globals.css */
+
 .wrapper {
   width: 420px;
   padding: 30px 40px;
   border-radius: 12px;
-  
-  /* Efecto "Frosted Glass" (Vidrio Esmerilado) */
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
-  
-  color: #ffffff; /* Color de texto principal (blanco) */
+  color: #ffffff;
 }
 
-/* --- Título "Login" --- */
 .wrapper h1 {
   font-size: 36px;
   text-align: center;
   margin-bottom: 20px;
-  text-transform: capitalize; /* Para que "login" sea "Login" */
+  text-transform: capitalize;
 }
 
-/* --- Cajas de Input (Usuario y Contraseña) --- */
 .wrapper .input-box {
-  position: relative; /* Clave para posicionar el ícono */
+  position: relative;
   width: 100%;
   height: 50px;
   margin: 30px 0;
@@ -43,84 +38,66 @@
 .input-box input {
   width: 100%;
   height: 100%;
-  background: transparent; /* Fondo transparente */
+  background: transparent;
   border: none;
   outline: none;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 40px; /* Bordes redondeados */
+  border-radius: 40px;
   font-size: 16px;
   color: #ffffff;
-  
-  /* Relleno: 20px izq, 45px der (para el ícono), 20px abajo */
   padding: 0 45px 0 20px;
 }
 
-/* Estilo del texto "placeholder" */
 .input-box input::placeholder {
   color: #eeeeee;
 }
 
-/* Posicionamiento del ícono (FaUser, FaLock) */
 .input-box .icon {
   position: absolute;
-  right: 20px; /* A 20px de la derecha */
-  top: 50%; /* Centrado verticalmente */
+  right: 20px;
+  top: 50%;
   transform: translateY(-50%);
   font-size: 18px;
 }
 
-/* --- Sección "Recuérdame" y "Olvidaste..." --- */
+/* --- CORRECCIÓN DE ALINEACIÓN --- */
 .wrapper .remember-forgot {
   display: flex;
-  justify-content: space-between; /* Alinea los elementos a los extremos */
+  justify-content: flex-end; /* Alinea el enlace a la derecha */
   align-items: center;
-  font-size: 0.9em; /* 14.5px aprox */
-  margin: -15px 0 15px; /* Sube un poco la sección */
-}
-
-.remember-forgot label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-/* Estilo del checkbox */
-.remember-forgot label input[type="checkbox"] {
-  accent-color: #ffffff; /* Color del "check" */
-  margin-right: 5px;
+  font-size: 0.9em;
+  margin: -15px 0 15px;
 }
 
 .remember-forgot a {
   color: #ffffff;
-  text-decoration: none; /* Sin subrayado */
+  text-decoration: none;
 }
 
 .remember-forgot a:hover {
-  text-decoration: underline; /* Subrayado al pasar el mouse */
+  text-decoration: underline;
 }
 
-/* --- Botón de "Iniciar Sesión" --- */
 .wrapper .btn {
   width: 100%;
   height: 45px;
-  background: #ffffff; /* Fondo blanco */
+  background: #ffffff;
   border: none;
   outline: none;
   border-radius: 40px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   font-size: 16px;
-  color: #333333; /* Texto oscuro */
+  color: #333333;
   font-weight: 700;
   transition: background 0.3s ease;
 }
 
 .wrapper .btn:hover {
-  background: #f0f0f0; /* Un gris muy claro al pasar el mouse */
+  background: #f0f0f0;
 }
 
-/* --- Sección "Regístrate" --- */
-.wrapper .login-register {
+.login-register {
   font-size: 0.9em;
   text-align: center;
   margin-top: 20px;

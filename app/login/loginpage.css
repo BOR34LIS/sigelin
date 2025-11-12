@@ -1,0 +1,7 @@
+.login-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Ocupa toda la altura de la pantalla */
+  padding: 1.5rem; /* Espacio por si la pantalla es muy pequeña */
+}
