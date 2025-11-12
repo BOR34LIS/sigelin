@@ -141,3 +141,204 @@
   /* AÑADIDO: Espacio para que el texto no choque con los botones */
   padding-top: 2rem; 
 }
+.inventario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.inventario-title {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.add-new-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #333;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.add-new-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* --- Estilos de la Tabla (Ajustes de columnas) --- */
+.inventario-table .stock-col {
+  width: 10%;
+  text-align: center;
+}
+.inventario-table .adjust-col {
+  width: 15%;
+  text-align: center;
+}
+.inventario-table .desc-col {
+  width: 30%;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+.stock-bajo-minimo {
+  color: #ff7b7b;
+  font-weight: 700;
+}
+
+/* --- Estilos de los Botones +/- --- */
+.stock-adjust-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  position: relative;
+}
+.stock-btn {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  width: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.stock-btn.minus {
+  color: #ff7b7b;
+}
+.stock-btn.plus {
+  color: #7bff7b;
+}
+.stock-btn:hover {
+  transform: scale(1.2);
+}
+.stock-btn:disabled {
+  color: #555;
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+.stock-btn-separator {
+  width: 1px;
+  height: 16px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 0 0.5rem;
+}
+
+/* Spinner de carga para la fila */
+.stock-spinner {
+  position: absolute;
+  right: -10px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #555;
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Estilos del Formulario de Nuevo Producto --- */
+.add-form-container {
+  background: rgba(255, 255, 255, 0.05); /* Ligeramente más claro */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+}
+.add-form-container h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.form-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+.add-form-input,
+.add-form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 1rem;
+  outline: none;
+  box-sizing: border-box; /* Importante para el width 100% */
+}
+.add-form-textarea {
+  min-height: 80px;
+  font-family: inherit;
+}
+.form-error {
+  color: #ff7b7b;
+  text-align: center;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.add-form-btn {
+  padding: 0.6rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.add-form-btn.cancel {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+.add-form-btn.cancel:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.add-form-btn.save {
+  background-color: #ffffff;
+  color: #333;
+}
+.add-form-btn.save:hover {
+  background-color: #f0f0f0;
+}
+.add-form-btn:disabled {
+  background-color: #aaa;
+  color: #555;
+  cursor: not-allowed;
+}

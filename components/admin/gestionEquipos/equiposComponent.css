@@ -1,0 +1,224 @@
+/* --- Contenedor Principal (Grid Layout) --- */
+.gestion-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 30px 40px;
+  color: #ffffff;
+  max-width: 1400px; /* Más ancho para la tabla de equipos */
+  margin: 2rem auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas:
+    "header nav"
+    "form   form"
+    "table  table";
+  gap: 1.5rem;
+}
+
+/* --- Botones de Navegación (Reutilizados) --- */
+.admin-nav-buttons {
+  grid-area: nav;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-self: end;
+}
+.add-new-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #333;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.add-new-btn:hover { background-color: #f0f0f0; }
+.add-new-btn svg { margin-right: 0.25rem; }
+.admin-nav-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.admin-nav-btn:hover { background-color: rgba(255, 255, 255, 0.2); }
+
+/* --- Header y Título (Reutilizados) --- */
+.gestion-header {
+  grid-area: header;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+}
+.gestion-title {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: 2.25rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* --- Tabla de Equipos (Reutilizada) --- */
+.admin-table {
+  grid-area: table;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem; /* Un poco más pequeño */
+}
+.admin-th {
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem 0.8rem;
+  text-align: left;
+  font-weight: 600;
+}
+.admin-td {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem 0.8rem;
+  vertical-align: middle;
+  font-size: 0.85rem; /* Un poco más pequeño */
+}
+.no-results {
+  grid-area: table;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* --- Formulario de Añadir (Reutilizado) --- */
+.add-form-container {
+  grid-area: form;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+}
+.add-form-container h2 { font-size: 1.5rem; font-weight: 600; margin-top: 0; margin-bottom: 1.5rem; text-align: center; }
+.add-form { display: flex; flex-direction: column; gap: 1rem; }
+.form-row { display: flex; gap: 1rem; }
+.form-group { flex: 1; display: flex; flex-direction: column; }
+.form-group label { font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: #ccc; }
+.add-form-input, .add-form-textarea { width: 100%; padding: 0.75rem 1rem; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; color: #ffffff; font-size: 1rem; outline: none; box-sizing: border-box; }
+.add-form-textarea { min-height: 80px; font-family: inherit; }
+.form-error { color: #ff7b7b; text-align: center; font-weight: 600; margin-top: 0.5rem; }
+.form-buttons { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
+.add-form-btn { padding: 0.6rem 1.5rem; font-size: 0.95rem; font-weight: 700; border: none; border-radius: 40px; cursor: pointer; transition: all 0.2s ease; }
+.add-form-btn.cancel { background-color: transparent; border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; }
+.add-form-btn.cancel:hover { background-color: rgba(255, 255, 255, 0.1); }
+.add-form-btn.save { background-color: #ffffff; color: #333; }
+.add-form-btn.save:hover { background-color: #f0f0f0; }
+.add-form-btn:disabled { background-color: #aaa; color: #555; cursor: not-allowed; }
+
+/* --- Estados de Carga/Error (reutilizados) --- */
+.admin-loader, .admin-error-message {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  margin: 2rem auto;
+  max-width: 800px;
+}
+.admin-loader { font-size: 1.5rem; color: #ffffff; }
+.admin-error-message { font-size: 1.2rem; color: #ff7b7b; background-color: rgba(255, 100, 100, 0.1); border: 1px solid rgba(255, 100, 100, 0.2); }
+.add-form-input:disabled {
+  background-color: rgba(0, 0, 0, 0.4);
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+/* Contenedor para alinear los botones del formulario */
+.form-group.form-buttons-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Alinea los botones al final */
+}
+
+/* Alinea los botones a la derecha */
+.form-buttons {
+  justify-content: flex-end;
+  /* (tus otros estilos de .form-buttons no cambian) */
+}
+
+/* Asegura que el mensaje de error esté alineado a la derecha también */
+.form-error {
+  text-align: right;
+  margin: 0;
+  margin-bottom: 0.5rem; /* Espacio antes de los botones */
+}
+.save-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: -1rem; /* Moverlo arriba, cerca del formulario/título */
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  height: 40px; 
+}
+
+.admin-save-btn {
+  padding: 0.6rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #333;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.admin-save-btn:hover {
+  background-color: #f0f0f0;
+}
+.admin-save-btn:disabled {
+  background-color: #aaa;
+  color: #555;
+  cursor: not-allowed;
+}
+
+/* Mensaje de estado (Éxito o Error) */
+.save-status {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.save-status.success {
+  color: #7bff7b; /* Verde brillante */
+}
+.save-status.error {
+  color: #ff7b7b; /* Rojo brillante */
+}
+
+
+/* --- Estilos para el <select> de Estado en la tabla --- */
+.status-select {
+  padding: 0.4rem 0.6rem;
+  background-color: #1a1a2e; /* Fondo oscuro */
+  color: #ffffff; /* Texto blanco */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  font-size: 0.9rem;
+  width: 100%;
+}
+.status-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

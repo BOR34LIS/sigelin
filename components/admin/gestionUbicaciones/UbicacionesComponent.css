@@ -1,0 +1,254 @@
+/* --- Contenedor Principal (Grid Layout) --- */
+.gestion-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  padding: 30px 40px;
+  color: #ffffff;
+  max-width: 1200px;
+  margin: 2rem auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto 1fr;
+  grid-template-areas:
+    "header nav"
+    "form   form"
+    "table  table";
+  gap: 1.5rem;
+}
+
+/* --- Botones de Navegación --- */
+.admin-nav-buttons {
+  grid-area: nav;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-self: end;
+}
+.add-new-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #333;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.add-new-btn:hover { background-color: #f0f0f0; }
+.add-new-btn svg { margin-right: 0.25rem; }
+.admin-nav-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.admin-nav-btn:hover { background-color: rgba(255, 255, 255, 0.2); }
+
+/* --- Header y Título --- */
+.gestion-header {
+  grid-area: header;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+}
+.gestion-title {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: 2.25rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* --- Tabla de Ubicaciones --- */
+.admin-table {
+  grid-area: table;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.admin-th {
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+.admin-td {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+}
+.no-results {
+  grid-area: table;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* --- Formulario de Añadir (reutilizado de inventario) --- */
+.add-form-container {
+  grid-area: form;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+}
+.add-form-container h2 { font-size: 1.5rem; font-weight: 600; margin-top: 0; margin-bottom: 1.5rem; text-align: center; }
+.add-form { display: flex; flex-direction: column; gap: 1rem; }
+.form-row { display: flex; gap: 1rem; }
+.form-group { flex: 1; display: flex; flex-direction: column; }
+.form-group label { font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: #ccc; }
+.add-form-input, .add-form-textarea { width: 100%; padding: 0.75rem 1rem; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; color: #ffffff; font-size: 1rem; outline: none; box-sizing: border-box; }
+.add-form-textarea { min-height: 80px; font-family: inherit; }
+.form-error { color: #ff7b7b; text-align: center; font-weight: 600; margin-top: 0.5rem; }
+.form-buttons { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
+.add-form-btn { padding: 0.6rem 1.5rem; font-size: 0.95rem; font-weight: 700; border: none; border-radius: 40px; cursor: pointer; transition: all 0.2s ease; }
+.add-form-btn.cancel { background-color: transparent; border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; }
+.add-form-btn.cancel:hover { background-color: rgba(255, 255, 255, 0.1); }
+.add-form-btn.save { background-color: #ffffff; color: #333; }
+.add-form-btn.save:hover { background-color: #f0f0f0; }
+.add-form-btn:disabled { background-color: #aaa; color: #555; cursor: not-allowed; }
+
+/* --- Estados de Carga/Error (reutilizados) --- */
+.admin-loader, .admin-error-message {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  margin: 2rem auto;
+  max-width: 800px;
+}
+.admin-loader { font-size: 1.5rem; color: #ffffff; }
+.admin-error-message { font-size: 1.2rem; color: #ff7b7b; background-color: rgba(255, 100, 100, 0.1); border: 1px solid rgba(255, 100, 100, 0.2); }
+.admin-th.actions-col {
+  width: 15%;
+  text-align: center;
+}
+.admin-td.actions-col {
+  text-align: center;
+}
+.action-btn {
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem; /* Icono más grande */
+  font-weight: 600;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 0 0.4rem;
+  transition: all 0.2s ease;
+}
+.action-btn.edit {
+  color: #bde6f4; /* Azul claro */
+}
+.action-btn.edit:hover {
+  background-color: rgba(91, 192, 222, 0.2);
+  border-color: rgba(91, 192, 222, 0.5);
+}
+.action-btn.delete {
+  color: #ffc2c2; /* Rojo claro */
+}
+.action-btn.delete:hover {
+  background-color: rgba(217, 83, 79, 0.2);
+  border-color: rgba(217, 83, 79, 0.5);
+}
+.action-btn:disabled {
+  color: #666;
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+/* --- Estilos del Modal de Confirmación --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+.modal-content {
+  background: #1e2a47; /* Fondo oscuro del modal */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+}
+.modal-content h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+.modal-content p {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #ccc;
+}
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.modal-btn {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.modal-btn.cancel {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+.modal-btn.cancel:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.modal-btn.delete {
+  background-color: #d9534f; /* Rojo de peligro */
+  color: #fff;
+}
+.modal-btn.delete:hover {
+  background-color: #c9302c;
+}
+.modal-btn:disabled {
+  background-color: #aaa;
+  color: #555;
+  cursor: not-allowed;
+}
+
+/* --- Ajuste al formulario de Añadir --- */
+/* Deshabilitar el campo ID en modo edición */
+.add-form-input:disabled {
+  background-color: rgba(0, 0, 0, 0.4);
+  color: #888;
+  cursor: not-allowed;
+}

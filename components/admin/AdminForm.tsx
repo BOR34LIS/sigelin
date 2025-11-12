@@ -10,7 +10,9 @@ import {
   FaBoxOpen,
   FaUserPlus,
   FaSpinner,
-} from "react-icons/fa"; // <-- 2. Añadir FaSpinner
+  FaLaptop, // <-- 1. ICONO AÑADIDO
+  FaMapMarkerAlt, // <-- 2. ICONO AÑADIDO
+} from "react-icons/fa";
 import { supabase } from "@/lib/supabase/client";
 
 // componente para cada ítem de navegación
@@ -33,9 +35,9 @@ const AdminForm = () => {
   const router = useRouter();
 
   // para manejar estados de carga y autorización
-  const [isLoading, setIsLoading] = useState(true); // Empezamos cargando
-  const [isAuthorized, setIsAuthorized] = useState(false); // No autorizado por defecto
-  const [logoutLoading, setLogoutLoading] = useState(false); // Estado de carga para el logout
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
   // verificamos el acceso de administrador al cargar el componente
   useEffect(() => {
@@ -92,6 +94,7 @@ const AdminForm = () => {
     }
   };
 
+  // ... (los return de 'isLoading' y 'isAuthorized' no cambian) ...
   // estado de carga inicial
   if (isLoading) {
     return (
@@ -157,6 +160,19 @@ const AdminForm = () => {
             icon={FaUsers}
             text="Gestionar Usuarios"
             onClick={() => router.push("/admin/usuarios")}
+          />
+
+          {/* --- 3. BOTONES AÑADIDOS --- */}
+          <NavItem
+            icon={FaLaptop}
+            text="Gestionar Equipos"
+            onClick={() => router.push("/admin/equipos")}
+          />
+
+          <NavItem
+            icon={FaMapMarkerAlt}
+            text="Gestionar Ubicaciones"
+            onClick={() => router.push("/admin/ubicaciones")}
           />
         </div>
 
