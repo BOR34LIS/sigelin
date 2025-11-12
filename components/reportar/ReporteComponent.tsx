@@ -13,6 +13,8 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
   const router = useRouter();
   // estados para el formulario y la autenticación
   const [pcId, setPcId] = useState("");
+  const [salaNombre, setSalaNombre] = useState("");
+  const [salaId, setSalaId] = useState("");
 
   const [tipoProblema, setTipoProblema] = useState("computador");
   const [descripcion, setDescripcion] = useState("");
@@ -38,11 +40,11 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
       const cleanedPcId = pcIdFromUrl ? pcIdFromUrl.trim().toUpperCase() : "";
 
       if (cleanedPcId) {
-        const {data: pcData, error: pcError } = await supabase
-        .from('equipos')
-        .select('id')
-        .eq('id', cleanedPcId)
-        .single();
+        const { data: pcData, error: pcError } = await supabase
+          .from('equipos')
+          .select('id, ubicacion_id')
+          .eq('id', cleanedPcId)
+          .single();
 
         if (pcError || !pcData) {
           console.error("Error al buscar equipo:", pcError?.message);
@@ -50,8 +52,26 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
           setLoading(false);
           return;
         }
+        let salaNombre = 'Sala no asignada'; // Valor por defecto
+        if (pcData.ubicacion_id) {
+          const { data: ubicacionData, error: ubicacionError } = await supabase
+            .from('ubicaciones')
+            .select('piso')
+            .eq('id', pcData.ubicacion_id) // Usamos el ID de ubicación del PC
+            .single();
+
+          if (ubicacionError) {
+            console.error("Error al buscar ubicación:", ubicacionError?.message);
+            salaNombre = 'Error al cargar sala';
+          } else if (ubicacionData) {
+            salaNombre = ubicacionData.piso;
+          }
+        }
         setPcId(pcData.id);
+        setSalaId(pcData.ubicacion_id);
+        setSalaNombre(salaNombre);
         setStatus("");
+        
       } else {
         setStatus("ID de equipo no válido o no encontrado.");
       }
@@ -142,7 +162,13 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
         <div className="infoBox">
           <p className="infoLabel">Estás reportando para:</p>
           <p className="infoData">
-            ID de Equipo: <span className="infoDataHighlight">{pcId}</span>
+            Equipo: <span className="infoDataHighlight">{pcId}</span>
+          </p>
+          <p className="infoData">
+            Piso: <span className="infoDataHighlight">{salaNombre}</span>
+          </p>
+          <p className="infoData">
+            Sala: <span className="infoDataHighlight">{salaId}</span>
           </p>
         </div>
 
