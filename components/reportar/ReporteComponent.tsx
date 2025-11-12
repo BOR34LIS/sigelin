@@ -13,8 +13,6 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
   const router = useRouter();
   // estados para el formulario y la autenticación
   const [pcId, setPcId] = useState("");
-  const [sala, setSala] = useState("");
-  const [computador, setComputador] = useState("");
 
   const [tipoProblema, setTipoProblema] = useState("computador");
   const [descripcion, setDescripcion] = useState("");
@@ -42,25 +40,20 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
       if (cleanedPcId) {
         const {data: pcData, error: pcError } = await supabase
         .from('equipos')
-        .select('id, ubicaciones (sala_laboratorio)')
+        .select('id')
         .eq('id', cleanedPcId)
         .single();
 
         if (pcError || !pcData) {
+          console.error("Error al buscar equipo:", pcError?.message);
           setStatus(`El ID de equipo "${cleanedPcId}" no es válido.`);
           setLoading(false);
           return;
         }
         setPcId(pcData.id);
-        if (pcData.ubicaciones) {
-          setSala((pcData.ubicaciones as any).sala_laboratorio || "Sala no asignada");
-        } else {
-          setSala("Sala no asignada");
-        }
-
         setStatus("");
       } else {
-        setStatus("ID de equipo no proporcionado en la URL.");
+        setStatus("ID de equipo no válido o no encontrado.");
       }
       setLoading(false);
     };
@@ -150,9 +143,6 @@ function ReporteComponent({ pcIdFromUrl }: ReporteComponentProps) {
           <p className="infoLabel">Estás reportando para:</p>
           <p className="infoData">
             ID de Equipo: <span className="infoDataHighlight">{pcId}</span>
-          </p>
-          <p className="infoData">
-            Sala: <span className="infoDataHighlight">{sala}</span>
           </p>
         </div>
 
